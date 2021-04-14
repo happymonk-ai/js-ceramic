@@ -97,7 +97,7 @@ export class StateManager {
     if (publish) {
       this.publishTip(state$);
     }
-    if (sync) {
+    if (sync === true || sync === 'force') {
       const tip$ = this.dispatcher.messageBus.queryNetwork(state$.id);
 
       const syncTimeout = (opts as LoadOpts).syncTimeoutMillis != undefined ? (opts as LoadOpts).syncTimeoutMillis : DEFAULT_SYNC_TIMEOUT

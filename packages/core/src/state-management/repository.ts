@@ -128,27 +128,20 @@ export class Repository {
    * Starts by checking if the document state is present in the in-memory cache, if not then then checks the state store, and finally loads the document from pubsub.
    */
   async load(streamId: StreamID, opts: LoadOpts | CreateOpts): Promise<RunningState> {
-    if (opts.forceSync && !opts.sync) {
-      throw new Error("Cannot set 'forceSync' without also setting 'sync'")
-    }
-
     return this.loadingQ.run(streamId.toString(), async () => {
       const fromMemory = this.fromMemory(streamId);
-      if (fromMemory) {
-        if (opts.forceSync) {
-          await this.stateManager.syncGenesis(fromMemory, opts)
-        }
-        return fromMemory;
-      }
+      if (fromMemory) return this.maybeSync(fromMemory, opts)
       const fromStateStore = await this.fromStateStore(streamId);
-      if (fromStateStore) {
-        if (opts.forceSync) {
-          await this.stateManager.syncGenesis(fromStateStore, opts)
-        }
-        return fromStateStore;
-      }
+      if (fromStateStore) return this.maybeSync(fromStateStore, opts)
       return this.fromNetwork(streamId, opts);
     });
+  }
+
+  private async maybeSync(state$: RunningState, opts: LoadOpts | CreateOpts): Promise<RunningState | undefined> {
+    if (opts.sync === 'force') {
+      await this.stateManager.syncGenesis(state$, opts);
+    }
+    return state$;
   }
 
   /**

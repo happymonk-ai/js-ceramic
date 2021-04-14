@@ -632,7 +632,7 @@ class Ceramic implements CeramicApi {
     this.repository.listPinned().then(async list => {
       let n = 0
       await Promise.all(list.map(async streamId => {
-        await this._loadDoc(StreamID.fromString(streamId), { sync: true, forceSync: true })
+        await this._loadDoc(StreamID.fromString(streamId), { sync: 'force' })
         n++;
       }))
       this._logger.verbose(`Successfully restored ${n} pinned documents`)
