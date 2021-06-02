@@ -328,6 +328,7 @@ export class CeramicDaemon {
    */
   async commits (req: Request, res: Response): Promise<void> {
     const streamId = StreamID.fromString(req.params.streamid || req.params.docid)
+    console.log('1.commits.0', streamId)
     const commits = await this.ceramic.loadStreamCommits(streamId)
     const serializedCommits = commits.map((r: any) => {
       return {
@@ -335,7 +336,7 @@ export class CeramicDaemon {
         value: StreamUtils.serializeCommit(r.value)
       }
     })
-
+    console.log('1.commits.1', streamId)
     // TODO remove docId from output when we are no longer supporting clients older than v1.0.0
     res.json({
       streamId: streamId.toString(),
@@ -355,8 +356,9 @@ export class CeramicDaemon {
     if (!(streamId && commit)) {
       throw new Error('streamId and commit are required in order to apply commit')
     }
-
+    console.log('1.applyCommit.0', streamId)
     const stream = await this.ceramic.applyCommit(streamId, StreamUtils.deserializeCommit(commit), opts)
+    console.log('1.applyCommit.1', streamId)
     res.json({
       streamId: stream.id.toString(),
       docId: stream.id.toString(),

@@ -55,10 +55,13 @@ export class Dispatcher {
       const { jws, linkedBlock } = data
       // put the JWS into the ipfs dag
       const cid = await this._ipfs.dag.put(jws, { format: 'dag-jose', hashAlg: 'sha2-256' })
+      console.time(`0.storeCommit-${cid}`)
       // put the payload into the ipfs dag
       await this._ipfs.block.put(linkedBlock, { cid: jws.link.toString() })
       await this._restrictRecordSize(jws.link.toString())
       await this._restrictRecordSize(cid)
+      console.timeEnd(`0.storeCommit-${cid}`)
+      console.trace(`0.storeCommit-${cid}`)
       return cid
     }
     const cid = await this._ipfs.dag.put(data)
@@ -75,9 +78,13 @@ export class Dispatcher {
    */
   async retrieveCommit (cid: CID | string): Promise<any> {
     try {
+      console.time(`0.retrieveCommit-${cid.toString()}`)
       const record = await this._ipfs.dag.get(cid, {timeout: IPFS_GET_TIMEOUT})
       await this._restrictRecordSize(cid)
+      console.timeEnd(`0.retrieveCommit-${cid.toString()}`)
+      console.trace(`0.retrieveCommit-${cid.toString()}`)
       return cloneDeep(record.value)
+
     } catch (e) {
       this._logger.err(`Error while loading commit CID ${cid.toString()} from IPFS: ${e}`)
       throw e
@@ -91,7 +98,10 @@ export class Dispatcher {
    */
   async retrieveFromIPFS (cid: CID | string, path?: string): Promise<any> {
     try {
+      console.time(`0.retrieveFromIPFS-${cid.toString()}`)
       const record = await this._ipfs.dag.get(cid, {timeout: IPFS_GET_TIMEOUT, path})
+      console.timeEnd(`0.retrieveFromIPFS-${cid.toString()}`)
+      console.trace(`0.retrieveFromIPFS-${cid.toString()}`)
       return cloneDeep(record.value)
     } catch (e) {
       this._logger.err(`Error while loading CID ${cid.toString()} from IPFS: ${e}`)

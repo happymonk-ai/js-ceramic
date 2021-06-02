@@ -130,6 +130,8 @@ export class StateManager {
   }
 
   private async _handleTip(state$: RunningState, cid: CID): Promise<void> {
+    console.log('0._handleTip', state$.id, cid.toString(), state$.state.log)
+    console.trace('0._handleTip.1', state$.id, cid.toString())
     this.logger.verbose(`Learned of new tip ${cid.toString()} for stream ${state$.id.toString()}`);
     const next = await this.conflictResolution.applyTip(state$.value, cid);
     if (next) {

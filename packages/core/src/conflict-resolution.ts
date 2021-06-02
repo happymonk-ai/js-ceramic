@@ -191,6 +191,7 @@ export async function fetchLog(
     // already processed
     return [];
   }
+  console.log('0.fetchLog.retrieveCommit', cid)
   const commit = await dispatcher.retrieveCommit(cid);
   if (commit == null) {
     throw new Error(`No commit found for CID ${cid.toString()}`);
@@ -198,6 +199,7 @@ export async function fetchLog(
 
   let payload = commit;
   if (StreamUtils.isSignedCommit(commit)) {
+    console.log('0.fetchLog.retrieveCommit.signed', cid, commit.link)
     payload = await dispatcher.retrieveCommit(commit.link);
     if (payload == null) {
       throw new Error(`No commit found for CID ${commit.link.toString()}`);
