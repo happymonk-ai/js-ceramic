@@ -169,7 +169,7 @@ export async function fetchLog(
   cid: CID,
   stateLog: HistoryLog,
   log: LogEntry[] = [],
-  timestamp: number | undefined = undefined,
+  timestamp?: number,
 ): Promise<LogEntry[]> {
   if (stateLog.includes(cid)) {
     // already processed
